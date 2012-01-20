@@ -172,26 +172,12 @@ namespace Holoville.HOTween.Plugins
 		/// <param name="p_totElapsed">
 		/// The total elapsed time since startup.
 		/// </param>
-		override protected internal void Update ( float p_totElapsed )
+		override protected void DoUpdate ( float p_totElapsed )
 		{
-			BaseUpdate( p_totElapsed );
-			
 			Vector3 curV = (Vector3)( GetValue() );
 			curV.x = ease( p_totElapsed, typedStartVal, changeVal, _duration );
 			
 			SetValue( curV );
-		}
-		
-		/// <summary>
-		/// Calls <see cref="Update"/> on this base class.
-		/// Used by classes that inherit from this class, to call the second-level <see cref="ABSTweenPlugin.Update"/>
-		/// </summary>
-		/// <param name="p_totElapsed">
-		/// A <see cref="System.Single"/>
-		/// </param>
-		protected void BaseUpdate( float p_totElapsed )
-		{
-			base.Update( p_totElapsed );
 		}
 	}
 }

@@ -227,10 +227,8 @@ namespace Holoville.HOTween.Plugins
 		/// <param name="p_totElapsed">
 		/// The total elapsed time since startup.
 		/// </param>
-		override protected internal void Update ( float p_totElapsed )
+		override protected void DoUpdate ( float p_totElapsed )
 		{
-			base.Update( p_totElapsed );
-			
 			float x = ease( p_totElapsed, typedStartVal.x, changeVal.x, _duration );
 			float y = ease( p_totElapsed, typedStartVal.y, changeVal.y, _duration );
 			float z = ease( p_totElapsed, typedStartVal.z, changeVal.z, _duration );

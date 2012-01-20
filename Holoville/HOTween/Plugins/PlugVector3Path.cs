@@ -285,10 +285,8 @@ namespace Holoville.HOTween.Plugins
 		/// <param name="p_totElapsed">
 		/// The total elapsed time since startup.
 		/// </param>
-		override protected internal void Update ( float p_totElapsed )
+		override protected void DoUpdate ( float p_totElapsed )
 		{
-			base.Update( p_totElapsed );
-			
 			pathPerc = ease( p_totElapsed, 0, 1, _duration );
 			// Clamp value because path has limited range of 0-1.
 			if ( pathPerc > 1 ) pathPerc = 1; else if ( pathPerc < 0 ) pathPerc = 0;

@@ -26,6 +26,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Holoville.HOTween.Core;
+using Holoville.HOTween.Plugins;
 using Holoville.HOTween.Plugins.Core;
 
 namespace Holoville.HOTween

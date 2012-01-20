@@ -68,10 +68,6 @@ namespace Holoville.HOTween.Plugins.Core
 		/// to prevent the creation of a useless valAccessor.
 		/// </summary>
 		protected	bool									ignoreAccessor;
-		/// <summary>
-		/// Total elapsed time since startup (loops excluded).
-		/// </summary>
-		protected	float									totElapsed;
 		
 		private		EaseType								easeType; // Store so instance can be cloned.
 		private		EaseInfo								easeInfo;
@@ -255,13 +251,18 @@ namespace Holoville.HOTween.Plugins.Core
 		/// Updates the tween.
 		/// </summary>
 		/// <param name="p_totElapsed">
-		/// The total elapsed time since startup.
+		/// The total elapsed time since startup (loops excluded).
 		/// </param>
-		virtual protected internal void Update( float p_totElapsed )
+		internal void Update( float p_totElapsed )
 		{
-			totElapsed = p_totElapsed;
-			if ( totElapsed > _duration )		totElapsed = _duration;
+			if ( p_totElapsed > _duration )		p_totElapsed = _duration;
+			DoUpdate( p_totElapsed );
 		}
+		
+		/// <summary>
+		/// Updates the plugin.
+		/// </summary>
+		abstract protected void DoUpdate( float p_totElapsed );
 		
 		/// <summary>
 		/// Rewinds the tween.
