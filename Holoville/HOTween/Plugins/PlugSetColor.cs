@@ -200,7 +200,6 @@ namespace Holoville.HOTween.Plugins
 		/// </summary>
 		override protected float GetSpeedBasedDuration( float p_speed )
 		{
-			// TODO BYSPEED > Set GetSpeedBasedDuration correctly for PlugSetColor
 			float speedDur = changeVal / p_speed;
 			if ( speedDur < 0 )		speedDur = -speedDur;
 			return speedDur;
