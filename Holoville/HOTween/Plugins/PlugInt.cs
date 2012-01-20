@@ -113,6 +113,16 @@ namespace Holoville.HOTween.Plugins
 		// METHODS ---------------------------------------------------------------------------
 		
 		/// <summary>
+		/// Returns the speed-based duration based on the given speed x second.
+		/// </summary>
+		override protected float GetSpeedBasedDuration( float p_speed )
+		{
+			float speedDur = changeVal / p_speed;
+			if ( speedDur < 0 )		speedDur = -speedDur;
+			return speedDur;
+		}
+		
+		/// <summary>
 		/// Sets the typed changeVal based on the current startVal and endVal.
 		/// </summary>
 		override protected void SetChangeVal()
@@ -131,7 +141,9 @@ namespace Holoville.HOTween.Plugins
 		/// </param>
 		override protected internal void Update ( float p_totElapsed )
 		{
-			float v = ease( p_totElapsed, typedStartVal, changeVal, tweenObj.duration );
+			base.Update( p_totElapsed );
+			
+			float v = ease( p_totElapsed, typedStartVal, changeVal, _duration );
 			SetValue( Mathf.Round( v ) );
 		}
 	}

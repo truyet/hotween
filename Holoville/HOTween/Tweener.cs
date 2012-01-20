@@ -40,6 +40,7 @@ namespace Holoville.HOTween
 		
 		private		float						_elapsedDelay = 0;
 		
+		internal	bool						_bySpeed = false;
 		internal	float						_delay = 0;
 		internal	EaseType					easeType = HOTween.defEaseType;
 		internal	float						delayCount = 0;
@@ -60,13 +61,19 @@ namespace Holoville.HOTween
 			get { return _target; }
 		}
 		/// <summary>
+		/// <c>true</c> if this tween is animated by speed instead than by duration.
+		/// </summary>
+		public		bool						bySpeed
+		{
+			get { return _bySpeed; }
+		}
+		/// <summary>
 		/// The delay that was set for this tween.
 		/// </summary>
 		public		float						delay
 		{
 			get { return _delay; }
 		}
-		
 		/// <summary>
 		/// The currently elapsed delay time.
 		/// </summary>
@@ -277,8 +284,9 @@ namespace Holoville.HOTween
 			ABSTweenPlugin plug;
 			for ( int i = 0; i < plugins.Count; ++i ) {
 				plug = plugins[i];
-				if ( !_isLoopingBack && plug.easeReversed || _isLoopingBack && _loopType == LoopType.YoyoInverse && !plug.easeReversed )
+				if ( !_isLoopingBack && plug.easeReversed || _isLoopingBack && _loopType == LoopType.YoyoInverse && !plug.easeReversed ) {
 					plug.ReverseEase();
+				}
 				plug.Update( plugElapsed );
 			}
 			
@@ -361,6 +369,15 @@ namespace Holoville.HOTween
 		override protected void OnStart()
 		{
 			for ( int i = 0; i < plugins.Count; ++i )		plugins[i].Startup();
+			if ( _bySpeed ) {
+				// Reset duration based on value changes and speed.
+				// Can't be done sooner because it needs to startup the plugins first.
+				_duration = 0;
+				foreach ( ABSTweenPlugin plug in plugins ) {
+					if ( plug.duration > _duration )		_duration = plug.duration;
+				}
+				SetFullDuration();
+			}
 			base.OnStart();
 		}
 		

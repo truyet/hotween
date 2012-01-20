@@ -210,6 +210,15 @@ namespace Holoville.HOTween.Plugins
 		// PRIVATE METHODS -------------------------------------------------------------------
 		
 		/// <summary>
+		/// Returns the speed-based duration based on the given speed x second.
+		/// </summary>
+		override protected float GetSpeedBasedDuration( float p_speed )
+		{
+			// TODO BYSPEED > Set GetSpeedBasedDuration correctly for PlugVector3Path
+			return p_speed;
+		}
+		
+		/// <summary>
 		/// Recreate the path if it was relative,
 		/// otherwise simply add the correct starting and ending point so the path can be reached from the property's actual position.
 		/// </summary>
@@ -278,7 +287,9 @@ namespace Holoville.HOTween.Plugins
 		/// </param>
 		override protected internal void Update ( float p_totElapsed )
 		{
-			pathPerc = ease( p_totElapsed, 0, 1, tweenObj.duration );
+			base.Update( p_totElapsed );
+			
+			pathPerc = ease( p_totElapsed, 0, 1, _duration );
 			// Clamp value because path has limited range of 0-1.
 			if ( pathPerc > 1 ) pathPerc = 1; else if ( pathPerc < 0 ) pathPerc = 0;
 			

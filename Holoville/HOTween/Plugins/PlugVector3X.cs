@@ -122,6 +122,16 @@ namespace Holoville.HOTween.Plugins
 		// METHODS ---------------------------------------------------------------------------
 		
 		/// <summary>
+		/// Returns the speed-based duration based on the given speed x second.
+		/// </summary>
+		override protected float GetSpeedBasedDuration( float p_speed )
+		{
+			float speedDur = changeVal / p_speed;
+			if ( speedDur < 0 )		speedDur = -speedDur;
+			return speedDur;
+		}
+		
+		/// <summary>
 		/// Rewinds the tween.
 		/// Should be overriden by tweens that control only part of the property (like HOTPluginVector3X).
 		/// </summary>
@@ -164,10 +174,24 @@ namespace Holoville.HOTween.Plugins
 		/// </param>
 		override protected internal void Update ( float p_totElapsed )
 		{
+			BaseUpdate( p_totElapsed );
+			
 			Vector3 curV = (Vector3)( GetValue() );
-			curV.x = ease( p_totElapsed, typedStartVal, changeVal, tweenObj.duration );
+			curV.x = ease( p_totElapsed, typedStartVal, changeVal, _duration );
 			
 			SetValue( curV );
+		}
+		
+		/// <summary>
+		/// Calls <see cref="Update"/> on this base class.
+		/// Used by classes that inherit from this class, to call the second-level <see cref="ABSTweenPlugin.Update"/>
+		/// </summary>
+		/// <param name="p_totElapsed">
+		/// A <see cref="System.Single"/>
+		/// </param>
+		protected void BaseUpdate( float p_totElapsed )
+		{
+			base.Update( p_totElapsed );
 		}
 	}
 }

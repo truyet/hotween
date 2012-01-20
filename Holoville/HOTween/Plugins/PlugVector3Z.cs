@@ -126,8 +126,10 @@ namespace Holoville.HOTween.Plugins
 		/// </param>
 		override protected internal void Update ( float p_totElapsed )
 		{
+			base.BaseUpdate( p_totElapsed );
+			
 			Vector3 curV = (Vector3)( GetValue() );
-			curV.z = ease( p_totElapsed, typedStartVal, changeVal, tweenObj.duration );
+			curV.z = ease( p_totElapsed, typedStartVal, changeVal, _duration );
 			
 			SetValue( curV );
 		}
