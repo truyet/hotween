@@ -56,9 +56,12 @@ namespace Holoville.HOTween.Plugins
 		private		Vector3				typedStartVal;
 		private		Vector3[]			points;
 		private		bool				isClosedPath = false;
+		private		bool				applyConstantSpeed = false;
 		private		OrientType			orientType = OrientType.None;
 		private		Vector3				orientation; // Used to get correct axis for orientation.
 		private		float				lookAheadVal = 0.0001f;
+		private		float				defDuration; // Used during constant speed calculations.
+		private		float[]				arcTimePercs; // Used during constant speed calculations.
 		
 		// REFERENCES /////////////////////////////////////////////
 		
@@ -139,6 +142,30 @@ namespace Holoville.HOTween.Plugins
 		
 		// ===================================================================================
 		// PARAMETERS ------------------------------------------------------------------------
+		
+		/// <summary>
+		/// Parameter > Applies constant speed along the path
+		/// (more computationally expensive).
+		/// </summary>
+		/// <returns>
+		/// A <see cref="PlugVector3Path"/>
+		/// </returns>
+		public PlugVector3Path ConstantSpeed() { return ConstantSpeed( true ); }
+		/// <summary>
+		/// Parameter > Choose whether to apply constant speed along the path
+		/// (more computationally expensive).
+		/// </summary>
+		/// <param name="p_applyConstantSpeed">
+		/// A <see cref="System.Boolean"/>
+		/// </param>
+		/// <returns>
+		/// A <see cref="PlugVector3Path"/>
+		/// </returns>
+		public PlugVector3Path ConstantSpeed( bool p_applyConstantSpeed )
+		{
+			applyConstantSpeed = p_applyConstantSpeed;
+			return this;
+		}
 		
 		/// <summary>
 		/// Parameter > Smoothly closes the path, so that it can be used for cycling loops.
@@ -277,6 +304,12 @@ namespace Holoville.HOTween.Plugins
 			
 			// Create the path.
 			path = new Path( pts );
+			
+			if ( applyConstantSpeed ) {
+				// Get constant speed time percentages.
+				arcTimePercs = path.GetArcTimePercentages();
+				defDuration = _duration / arcTimePercs.Length;
+			}
 		}
 		
 		/// <summary>
@@ -287,7 +320,30 @@ namespace Holoville.HOTween.Plugins
 		/// </param>
 		override protected void DoUpdate ( float p_totElapsed )
 		{
+//			if ( applyConstantSpeed && pathPerc > 0 ) {
+//				// Determine inside which arc we are, and apply corresponding time modifier to elapsed.
+//				// elapsed : duration = x : defDuration
+////				Debug.Log( p_totElapsed );
+//				int arcInd = (int)( p_totElapsed / defDuration );
+//				float arcElapsed = p_totElapsed - ( defDuration * arcInd );
+//				float prevElapsed = 0;
+//				for ( int i = 0; i < arcInd; ++i )	prevElapsed += defDuration * arcTimePercs[i];
+////				Debug.Log( "    > " + defDuration + "/" + p_totElapsed + "/" + (p_totElapsed / defDuration) + "/" + ((int)( p_totElapsed / defDuration )) + " - " + arcInd + " > " + arcTimePercs[arcInd] );
+//				p_totElapsed = prevElapsed + ( arcElapsed * arcTimePercs[arcInd] );
+//				Debug.Log( "   " + arcInd + " > " + arcTimePercs[arcInd] + " - " + p_totElapsed + "/" + prevElapsed );
+//			}
 			pathPerc = ease( p_totElapsed, 0, 1, _duration );
+			if ( applyConstantSpeed && pathPerc > 0 ) {
+				// Determine inside which arc we are, and apply corresponding time modifier to elapsed.
+				float defPerc = 1f / arcTimePercs.Length;
+				int arcInd = (int)( pathPerc / defPerc );
+				Debug.Log( defPerc + "/" + pathPerc + "/" + arcInd );
+				float arcPerc = pathPerc - ( defPerc * arcInd );
+//				Debug.Log( " > " + arcInd + " > " + arcPerc + "/" + defDuration + " > " + arcTimePercs[arcInd] + " > " + ( arcPerc / arcTimePercs[arcInd] ) );
+				float prevPerc = 0;
+				for ( int i = 0; i < arcInd; ++i )	prevPerc += defPerc * arcTimePercs[i];
+				pathPerc = prevPerc + ( arcPerc * arcTimePercs[arcInd] );
+			}
 			// Clamp value because path has limited range of 0-1.
 			if ( pathPerc > 1 ) pathPerc = 1; else if ( pathPerc < 0 ) pathPerc = 0;
 			
