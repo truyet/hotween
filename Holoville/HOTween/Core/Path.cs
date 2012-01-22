@@ -40,6 +40,7 @@ namespace Holoville.HOTween.Core
 	{
 		// VARS ///////////////////////////////////////////////////
 		
+		internal		float			defArcLengthPerc;
 		internal		Vector3[]		path;
 		
 		
@@ -114,7 +115,7 @@ namespace Holoville.HOTween.Core
 		/// Journal of graphics tools, 6(4):29-40, 2001
 		/// (http://jgt.akpeters.com/papers/VincentForsey01/CurveLength.html).
 		/// </summary>
-		private float GetArcLength( float p_minT, float p_maxT, int p_subdivisions )
+		public float GetArcLength( float p_minT, float p_maxT, int p_subdivisions )
 		{
 			if ( ( p_subdivisions & 0x01 ) == 0 ) ++p_subdivisions;
 			
@@ -209,22 +210,19 @@ namespace Holoville.HOTween.Core
 		// INTERNAL METHODS ------------------------------------------------------------------
 		
 		/// <summary>
-		/// Returns the time percentage for each arc.
+		/// Returns the percentage for each arc (1 being the full length of the whole curve).
 		/// Used to move with constant speed along the path.
 		/// </summary>
-		/// <returns>
-		/// A <see cref="System.Single"/>
-		/// </returns>
-		internal float[] GetArcTimePercentages()
+		internal float[] GetArcLengthsPercentages()
 		{
 			float[] arcLens = GetArcLengths( 10 );
 			float[] percs = new float[arcLens.Length];
 			float fullLen = 0;
 			for ( int i = 0; i < arcLens.Length; ++i )	fullLen += arcLens[i];
 			float defArcLen = fullLen / arcLens.Length;
+			defArcLengthPerc = 1f / arcLens.Length;
 			for ( int i = 0; i < percs.Length; ++i ) {
-				percs[i] = arcLens[i] / defArcLen;
-				Debug.Log( percs[i] + " / " + arcLens[i] );
+				percs[i] = ( arcLens[i] * defArcLengthPerc ) / defArcLen;
 			}
 			return percs;
 		}

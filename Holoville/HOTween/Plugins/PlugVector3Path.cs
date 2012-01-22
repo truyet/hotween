@@ -60,8 +60,7 @@ namespace Holoville.HOTween.Plugins
 		private		OrientType			orientType = OrientType.None;
 		private		Vector3				orientation; // Used to get correct axis for orientation.
 		private		float				lookAheadVal = 0.0001f;
-		private		float				defDuration; // Used during constant speed calculations.
-		private		float[]				arcTimePercs; // Used during constant speed calculations.
+		private		float[]				arcLengthsPercs; // Used during constant speed calculations.
 		
 		// REFERENCES /////////////////////////////////////////////
 		
@@ -306,9 +305,8 @@ namespace Holoville.HOTween.Plugins
 			path = new Path( pts );
 			
 			if ( applyConstantSpeed ) {
-				// Get constant speed time percentages.
-				arcTimePercs = path.GetArcTimePercentages();
-				defDuration = _duration / arcTimePercs.Length;
+				// Get arc lengths percentages.
+				arcLengthsPercs = path.GetArcLengthsPercentages();
 			}
 		}
 		
@@ -320,29 +318,25 @@ namespace Holoville.HOTween.Plugins
 		/// </param>
 		override protected void DoUpdate ( float p_totElapsed )
 		{
-//			if ( applyConstantSpeed && pathPerc > 0 ) {
-//				// Determine inside which arc we are, and apply corresponding time modifier to elapsed.
-//				// elapsed : duration = x : defDuration
-////				Debug.Log( p_totElapsed );
-//				int arcInd = (int)( p_totElapsed / defDuration );
-//				float arcElapsed = p_totElapsed - ( defDuration * arcInd );
-//				float prevElapsed = 0;
-//				for ( int i = 0; i < arcInd; ++i )	prevElapsed += defDuration * arcTimePercs[i];
-////				Debug.Log( "    > " + defDuration + "/" + p_totElapsed + "/" + (p_totElapsed / defDuration) + "/" + ((int)( p_totElapsed / defDuration )) + " - " + arcInd + " > " + arcTimePercs[arcInd] );
-//				p_totElapsed = prevElapsed + ( arcElapsed * arcTimePercs[arcInd] );
-//				Debug.Log( "   " + arcInd + " > " + arcTimePercs[arcInd] + " - " + p_totElapsed + "/" + prevElapsed );
-//			}
 			pathPerc = ease( p_totElapsed, 0, 1, _duration );
-			if ( applyConstantSpeed && pathPerc > 0 ) {
+			if ( applyConstantSpeed && pathPerc > 0 && pathPerc < 1 ) {
 				// Determine inside which arc we are, and apply corresponding time modifier to elapsed.
-				float defPerc = 1f / arcTimePercs.Length;
-				int arcInd = (int)( pathPerc / defPerc );
-				Debug.Log( defPerc + "/" + pathPerc + "/" + arcInd );
-				float arcPerc = pathPerc - ( defPerc * arcInd );
-//				Debug.Log( " > " + arcInd + " > " + arcPerc + "/" + defDuration + " > " + arcTimePercs[arcInd] + " > " + ( arcPerc / arcTimePercs[arcInd] ) );
-				float prevPerc = 0;
-				for ( int i = 0; i < arcInd; ++i )	prevPerc += defPerc * arcTimePercs[i];
-				pathPerc = prevPerc + ( arcPerc * arcTimePercs[arcInd] );
+				float constPerc = 0;
+				float arcLenghtPerc;
+				float diffPerc;
+				for ( int i = 0; i < arcLengthsPercs.Length; ++i ) {
+					arcLenghtPerc = arcLengthsPercs[i];
+					if ( constPerc + arcLenghtPerc > pathPerc ) {
+						diffPerc = pathPerc - constPerc;
+						// diffPerc : perc = x : defPerc
+						diffPerc = ( diffPerc * path.defArcLengthPerc ) / arcLenghtPerc;
+						pathPerc = ( i * path.defArcLengthPerc ) + diffPerc;
+						Debug.Log( i + " > " + constPerc + "/" + arcLenghtPerc + "/" + pathPerc + " > " + diffPerc );
+						break;
+					} else {
+						constPerc += arcLenghtPerc;
+					}
+				}
 			}
 			// Clamp value because path has limited range of 0-1.
 			if ( pathPerc > 1 ) pathPerc = 1; else if ( pathPerc < 0 ) pathPerc = 0;
