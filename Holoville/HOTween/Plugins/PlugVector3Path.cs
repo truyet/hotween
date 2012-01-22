@@ -328,10 +328,7 @@ namespace Holoville.HOTween.Plugins
 					arcLenghtPerc = arcLengthsPercs[i];
 					if ( constPerc + arcLenghtPerc > pathPerc ) {
 						diffPerc = pathPerc - constPerc;
-						// diffPerc : perc = x : defPerc
-						diffPerc = ( diffPerc * path.defArcLengthPerc ) / arcLenghtPerc;
-						pathPerc = ( i * path.defArcLengthPerc ) + diffPerc;
-						Debug.Log( i + " > " + constPerc + "/" + arcLenghtPerc + "/" + pathPerc + " > " + diffPerc );
+						pathPerc = ( i * path.defArcLengthPerc ) + path.defArcLengthPerc / ( arcLenghtPerc / diffPerc );
 						break;
 					} else {
 						constPerc += arcLenghtPerc;
