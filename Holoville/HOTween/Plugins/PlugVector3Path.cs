@@ -25,6 +25,7 @@
 
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 using Holoville.HOTween.Core;
 using Holoville.HOTween.Plugins.Core;
 
@@ -47,26 +48,27 @@ namespace Holoville.HOTween.Plugins
 		
 		// VARS ///////////////////////////////////////////////////
 		
-		static internal	Type[]			validPropTypes = { typeof(Vector3) };
-		static internal	Type[]			validValueTypes = { typeof(Vector3[]) };
+		static internal	Type[]				validPropTypes = { typeof(Vector3) };
+		static internal	Type[]				validValueTypes = { typeof(Vector3[]) };
 		
-		internal	Path				path; // Internal so that HOTween OnDrawGizmo can find it and draw the paths.
-		internal	float				pathPerc = 0; // Stores the current percentage of the path, so that HOTween's OnDrawGizmo can show its velocity.
+		internal	Path					path; // Internal so that HOTween OnDrawGizmo can find it and draw the paths.
+		internal	float					pathPerc = 0; // Stores the current percentage of the path, so that HOTween's OnDrawGizmo can show its velocity.
 		
-		private		Vector3				typedStartVal;
-		private		Vector3[]			points;
-		private		bool				isClosedPath = false;
-		private		bool				applyConstantSpeed = false;
-		private		OrientType			orientType = OrientType.None;
-		private		Vector3				orientation; // Used to get correct axis for orientation.
-		private		float				lookAheadVal = 0.0001f;
-		private		float[]				arcLengthsPercs; // Used during constant speed calculations.
+		private		Vector3					typedStartVal;
+		private		Vector3[]				points;
+		private		bool					isClosedPath = false;
+		private		bool					applyConstantSpeed = false;
+		private		OrientType				orientType = OrientType.None;
+		private		Vector3					orientation; // Used to get correct axis for orientation.
+		private		float					lookAheadVal = 0.0001f;
+		private		Dictionary<float,float>	dcTimeToLen; // Stores arc lenghts table, used for constant speed calculations.
+		private		float					pathLen; // Stored when storing dcTimeToLen;
 		
 		// REFERENCES /////////////////////////////////////////////
 		
-		private		Vector3				lookPos;
-		private		Transform			lookTrans;
-		private		Transform			orientTrans;
+		private		Vector3					lookPos;
+		private		Transform				lookTrans;
+		private		Transform				orientTrans;
 		
 		// GETS/SETS //////////////////////////////////////////////
 		
@@ -74,7 +76,7 @@ namespace Holoville.HOTween.Plugins
 		/// Gets the untyped start value,
 		/// sets both the untyped and the typed start value.
 		/// </summary>
-		override protected	object		startVal {
+		override protected	object			startVal {
 			get { return _startVal; }
 			set { _startVal = typedStartVal = (Vector3) value; }
 		}
@@ -83,7 +85,7 @@ namespace Holoville.HOTween.Plugins
 		/// Gets the untyped end value,
 		/// sets both the untyped and the typed end value.
 		/// </summary>
-		override protected	object		endVal {
+		override protected	object			endVal {
 			get { return _endVal; }
 			set {
 				_endVal = value;
@@ -305,8 +307,8 @@ namespace Holoville.HOTween.Plugins
 			path = new Path( pts );
 			
 			if ( applyConstantSpeed ) {
-				// Get arc lengths percentages.
-				arcLengthsPercs = path.GetArcLengthsPercentages();
+				// Store arc lengths table.
+				dcTimeToLen = path.GetTimeToArcLenTable( path.path.Length * 4, out pathLen );
 			}
 		}
 		
@@ -320,20 +322,23 @@ namespace Holoville.HOTween.Plugins
 		{
 			pathPerc = ease( p_totElapsed, 0, 1, _duration );
 			if ( applyConstantSpeed && pathPerc > 0 && pathPerc < 1 ) {
-				float constPerc = 0;
-				float arcLenghtPerc;
-				float diffPerc;
-				for ( int i = 0; i < arcLengthsPercs.Length; ++i ) {
-					arcLenghtPerc = arcLengthsPercs[i];
-					if ( constPerc + arcLenghtPerc > pathPerc ) {
-						diffPerc = pathPerc - constPerc;
-//						pathPerc = ( i * path.defArcLengthPerc ) + path.defArcLengthPerc / ( arcLenghtPerc / diffPerc );
-						pathPerc = ( i * path.defArcLengthPerc ) + diffPerc / ( arcLenghtPerc / path.defArcLengthPerc );
+				float tLen = pathLen * pathPerc;
+				// Find point in time/lenght table.
+				float t0 = 0;
+				float l0 = 0;
+				float t1 = 0;
+				float l1 = 0;
+				foreach ( KeyValuePair<float,float> item in dcTimeToLen ) {
+					if ( item.Value > tLen ) {
+						t1 = item.Key;
+						l1 = item.Value;
 						break;
-					} else {
-						constPerc += arcLenghtPerc;
 					}
+					t0 = item.Key;
+					l0 = item.Value;
 				}
+				// Find correct time.
+				pathPerc = t0 + ( ( tLen - l0 ) / ( l1 - l0 ) ) * ( t1 - t0 );
 			}
 			// Clamp value because path has limited range of 0-1.
 			if ( pathPerc > 1 ) pathPerc = 1; else if ( pathPerc < 0 ) pathPerc = 0;
