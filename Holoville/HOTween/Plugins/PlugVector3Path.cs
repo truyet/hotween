@@ -242,8 +242,7 @@ namespace Holoville.HOTween.Plugins
 		/// </summary>
 		override protected float GetSpeedBasedDuration( float p_speed )
 		{
-			// TODO BYSPEED > Set GetSpeedBasedDuration correctly for PlugVector3Path
-			return p_speed;
+			return pathLen / p_speed;
 		}
 		
 		/// <summary>
