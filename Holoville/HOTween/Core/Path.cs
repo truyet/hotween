@@ -218,12 +218,13 @@ namespace Holoville.HOTween.Core
 			float[] arcLens = GetArcLengths( 10 );
 			float[] percs = new float[arcLens.Length];
 			float fullLen = 0;
-			for ( int i = 0; i < arcLens.Length; ++i )	fullLen += arcLens[i];
+			for ( int i = 0; i < arcLens.Length; ++i )		fullLen += arcLens[i];
 			float defArcLen = fullLen / arcLens.Length;
 			defArcLengthPerc = 1f / arcLens.Length;
 			for ( int i = 0; i < percs.Length; ++i ) {
 				percs[i] = ( arcLens[i] * defArcLengthPerc ) / defArcLen;
 			}
+			
 			return percs;
 		}
 		

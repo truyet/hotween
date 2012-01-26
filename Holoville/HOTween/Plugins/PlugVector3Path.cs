@@ -320,7 +320,6 @@ namespace Holoville.HOTween.Plugins
 		{
 			pathPerc = ease( p_totElapsed, 0, 1, _duration );
 			if ( applyConstantSpeed && pathPerc > 0 && pathPerc < 1 ) {
-				// Determine inside which arc we are, and apply corresponding time modifier to elapsed.
 				float constPerc = 0;
 				float arcLenghtPerc;
 				float diffPerc;
@@ -328,7 +327,8 @@ namespace Holoville.HOTween.Plugins
 					arcLenghtPerc = arcLengthsPercs[i];
 					if ( constPerc + arcLenghtPerc > pathPerc ) {
 						diffPerc = pathPerc - constPerc;
-						pathPerc = ( i * path.defArcLengthPerc ) + path.defArcLengthPerc / ( arcLenghtPerc / diffPerc );
+//						pathPerc = ( i * path.defArcLengthPerc ) + path.defArcLengthPerc / ( arcLenghtPerc / diffPerc );
+						pathPerc = ( i * path.defArcLengthPerc ) + diffPerc / ( arcLenghtPerc / path.defArcLengthPerc );
 						break;
 					} else {
 						constPerc += arcLenghtPerc;
