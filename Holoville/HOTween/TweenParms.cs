@@ -40,7 +40,7 @@ namespace Holoville.HOTween
 	{
 		// VARS ///////////////////////////////////////////////////
 		
-		private		bool					bySpeed = false;
+		private		bool					speedBased = false;
 		private		EaseType				easeType = HOTween.defEaseType;
 		private		float					delay = 0;
 		private		List<HOTPropData>		propDatas;
@@ -74,8 +74,8 @@ namespace Holoville.HOTween
 		{
 			InitializeOwner( p_tweenObj );
 			
-			if ( bySpeed )		easeType = EaseType.Linear;
-			p_tweenObj._bySpeed = bySpeed;
+			if ( speedBased )		easeType = EaseType.Linear;
+			p_tweenObj._speedBased = speedBased;
 			p_tweenObj.easeType = easeType;
 			p_tweenObj._delay = p_tweenObj.delayCount = delay;
 			
@@ -175,7 +175,7 @@ namespace Holoville.HOTween
 		/// in case of Quaternions, the amount represents the full rotation (360°) speed x second;
 		/// in case of strings, the amount represents the amount of changed letters x second.
 		/// </summary>
-		public TweenParms BySpeed() { return BySpeed( true ); }
+		public TweenParms SpeedBased() { return SpeedBased( true ); }
 		/// <summary>
 		/// Sets whether to tween by speed or not.
 		/// When a tween is based on speed instead than time,
@@ -184,12 +184,12 @@ namespace Holoville.HOTween
 		/// In case of Vectors, the amount represents the vector length x second;
 		/// in case of strings, the amount represents the amount of changed letters x second.
 		/// </summary>
-		/// <param name="p_bySpeed">
+		/// <param name="p_speedBased">
 		/// If <c>true</c> this tween will work by speed instead than by time.
 		/// </param>
-		public TweenParms BySpeed( bool p_bySpeed )
+		public TweenParms SpeedBased( bool p_speedBased )
 		{
-			bySpeed = p_bySpeed;
+			speedBased = p_speedBased;
 			
 			return this;
 		}

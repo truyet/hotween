@@ -41,7 +41,7 @@ namespace Holoville.HOTween
 		
 		private		float						_elapsedDelay = 0;
 		
-		internal	bool						_bySpeed = false;
+		internal	bool						_speedBased = false;
 		internal	float						_delay = 0;
 		internal	EaseType					easeType = HOTween.defEaseType;
 		internal	float						delayCount = 0;
@@ -64,9 +64,9 @@ namespace Holoville.HOTween
 		/// <summary>
 		/// <c>true</c> if this tween is animated by speed instead than by duration.
 		/// </summary>
-		public		bool						bySpeed
+		public		bool						speedBased
 		{
-			get { return _bySpeed; }
+			get { return _speedBased; }
 		}
 		/// <summary>
 		/// The delay that was set for this tween.
@@ -368,7 +368,7 @@ namespace Holoville.HOTween
 		override protected void OnStart()
 		{
 			for ( int i = 0; i < plugins.Count; ++i )		plugins[i].Startup();
-			if ( _bySpeed ) {
+			if ( _speedBased ) {
 				// Reset duration based on value changes and speed.
 				// Can't be done sooner because it needs to startup the plugins first.
 				_duration = 0;

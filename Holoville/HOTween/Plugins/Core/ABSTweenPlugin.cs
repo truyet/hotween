@@ -199,7 +199,7 @@ namespace Holoville.HOTween.Plugins.Core
 			_initialized = true;
 			
 			tweenObj = p_tweenObj;
-			if ( easeInfo == null || tweenObj.bySpeed ) {
+			if ( easeInfo == null || tweenObj.speedBased ) {
 				easeType = p_easeType;
 				easeInfo = EaseInfo.GetEaseInfo( p_easeType );
 				ease = easeInfo.ease;
@@ -231,7 +231,7 @@ namespace Holoville.HOTween.Plugins.Core
 			startVal = GetValue();
 			SetChangeVal();
 			
-			if ( tweenObj.bySpeed ) {
+			if ( tweenObj.speedBased ) {
 				// Get duration based on speed.
 				// Can't be done earlier because it needs changeVal to be set.
 				_duration = GetSpeedBasedDuration( _duration );
