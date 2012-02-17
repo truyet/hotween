@@ -148,7 +148,6 @@ namespace Holoville.HOTween.Plugins
 		/// </param>
 		override protected void SetIncremental( int p_diffIncr )
 		{
-			// FIXME SetIncremental PlugString check that this works.
 			if ( p_diffIncr > 0 ) {
 				while ( p_diffIncr > 0 ) {
 					typedStartVal += typedEndVal;
